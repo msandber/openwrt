@@ -1,0 +1,65 @@
+From 675ca6a65a7a92d4f4a40cbf5a07d7c7c292cb34 Mon Sep 17 00:00:00 2001
+From: Mauri Sandberg <maukka@ext.kapsi.fi>
+Date: Mon, 21 Feb 2022 10:00:14 +0200
+Subject: [PATCH 1/6] Revert "Revert "of: net: support NVMEM cells with MAC in
+ text format""
+
+This reverts commit 3486eb774f9d6c2cafcfed31936c9a9b7adf8f05 for
+my own use.
+---
+ net/core/of_net.c | 33 ++++++++++++++++++++++-----------
+ 1 file changed, 22 insertions(+), 11 deletions(-)
+
+--- a/net/core/of_net.c
++++ b/net/core/of_net.c
+@@ -61,7 +61,7 @@ static int of_get_mac_addr_nvmem(struct
+ {
+ 	struct platform_device *pdev = of_find_device_by_node(np);
+ 	struct nvmem_cell *cell;
+-	const void *mac;
++	const void *buf;
+ 	size_t len;
+ 	int ret;
+ 
+@@ -78,21 +78,32 @@ static int of_get_mac_addr_nvmem(struct
+ 	if (IS_ERR(cell))
+ 		return PTR_ERR(cell);
+ 
+-	mac = nvmem_cell_read(cell, &len);
++	buf = nvmem_cell_read(cell, &len);
+ 	nvmem_cell_put(cell);
+ 
+-	if (IS_ERR(mac))
+-		return PTR_ERR(mac);
++	if (IS_ERR(buf))
++		return PTR_ERR(buf);
+ 
+-	if (len != ETH_ALEN || !is_valid_ether_addr(mac)) {
+-		kfree(mac);
+-		return -EINVAL;
++	ret = 0;
++	if (len == ETH_ALEN) {
++		if (is_valid_ether_addr(buf))
++			memcpy(addr, buf, ETH_ALEN);
++		else
++			ret = -EINVAL;
++	} else if (len == 3 * ETH_ALEN - 1) {
++		u8 mac[ETH_ALEN];
++
++		if (mac_pton(buf, mac))
++			memcpy(addr, mac, ETH_ALEN);
++		else
++			ret = -EINVAL;
++	} else {
++		ret = -EINVAL;
+ 	}
+ 
+-	memcpy(addr, mac, ETH_ALEN);
+-	kfree(mac);
++	kfree(buf);
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ static int of_add_mac_address(struct device_node *np, u8* addr)

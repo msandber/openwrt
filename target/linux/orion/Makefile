@@ -7,7 +7,7 @@ CPU_TYPE:=xscale
 DEVICE_TYPE:=nas
 FEATURES:=rtc low_mem small_flash squashfs ramdisk usb gpio
 
-KERNEL_PATCHVER:=5.10
+KERNEL_PATCHVER:=5.15
 
 include $(INCLUDE_DIR)/target.mk
 KERNELNAME:=zImage
