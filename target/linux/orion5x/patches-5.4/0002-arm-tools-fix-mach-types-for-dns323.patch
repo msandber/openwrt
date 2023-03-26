@@ -1,0 +1,30 @@
+From bde96bd4aab7edd6d9ba6f811a66867c5f4c37f3 Mon Sep 17 00:00:00 2001
+From: Mauri Sandberg <maukka@ext.kapsi.fi>
+Date: Wed, 5 Oct 2022 21:12:04 +0300
+Subject: [PATCH 2/2] arm: tools: fix mach-types for dns323
+
+---
+ arch/arm/tools/mach-types | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+--- a/arch/arm/tools/mach-types
++++ b/arch/arm/tools/mach-types
+@@ -117,7 +117,7 @@ omap_h3			MACH_OMAP_H3		OMAP_H3			509
+ omap_h4			MACH_OMAP_H4		OMAP_H4			510
+ omap_osk		MACH_OMAP_OSK		OMAP_OSK		515
+ tosa			MACH_TOSA		TOSA			520
+-avila			MACH_AVILA		AVILA			526
++#avila			MACH_AVILA		AVILA			526
+ edb9302			MACH_EDB9302		EDB9302			538
+ husky			MACH_HUSKY		HUSKY			543
+ shepherd		MACH_SHEPHERD		SHEPHERD		545
+@@ -271,7 +271,8 @@ mx31_3ds		MACH_MX31_3DS		MX31_3DS		1511
+ qong			MACH_QONG		QONG			1524
+ omap2evm		MACH_OMAP2EVM		OMAP2EVM		1534
+ omap3evm		MACH_OMAP3EVM		OMAP3EVM		1535
+-dns323			MACH_DNS323		DNS323			1542
++#dns323			MACH_DNS323		DNS323			1542
++dns323			MACH_DNS323		DNS323			526
+ omap3_beagle		MACH_OMAP3_BEAGLE	OMAP3_BEAGLE		1546
+ nokia_n810		MACH_NOKIA_N810		NOKIA_N810		1548
+ pcm038			MACH_PCM038		PCM038			1551

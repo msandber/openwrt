@@ -1,0 +1,37 @@
+From 83ae8c71613b7e243ad4ba0385e08693218a1951 Mon Sep 17 00:00:00 2001
+From: Mauri Sandberg <maukka@ext.kapsi.fi>
+Date: Thu, 13 Oct 2022 18:18:18 +0300
+Subject: [PATCH] ARM: orion5x: combine kernel and filesystem in firmware
+
+---
+ arch/arm/mach-orion5x/dns323-setup.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm/mach-orion5x/dns323-setup.c b/arch/arm/mach-orion5x/dns323-setup.c
+index 87cb47220e82..f01c3e25b9db 100644
+--- a/arch/arm/mach-orion5x/dns323-setup.c
++++ b/arch/arm/mach-orion5x/dns323-setup.c
+@@ -129,17 +129,14 @@ static struct mtd_partition dns323_partitions[] = {
+ 		.size	= 0x00010000,
+ 		.offset = 0x00010000,
+ 	}, {
+-		.name	= "Linux Kernel",
+-		.size	= 0x00180000,
++		.name	= "firmware",
++		.size	= 0x007b0000,
+ 		.offset	= 0x00020000,
+-	}, {
+-		.name	= "File System",
+-		.size	= 0x00630000,
+-		.offset	= 0x001A0000,
+ 	}, {
+ 		.name	= "u-boot",
+ 		.size	= 0x00030000,
+ 		.offset	= 0x007d0000,
++		.mask_flags = MTD_WRITEABLE,
+ 	},
+ };
+ 
+-- 
+2.25.1
+
