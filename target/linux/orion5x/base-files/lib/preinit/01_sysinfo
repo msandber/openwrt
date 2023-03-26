@@ -1,0 +1,23 @@
+do_sysinfo_orion5x() {
+	local machine
+	local name
+
+	machine=$(grep "^Hardware" /proc/cpuinfo | sed "s/Hardware.*: \(.*\)/\1/g")
+
+	case "$machine" in
+	"D-Link DNS-323"*)
+		name="dlink,dns323"
+		;;
+
+	*)
+		name="generic"
+		;;
+	esac
+
+	[ -e "/tmp/sysinfo/" ] || mkdir -p "/tmp/sysinfo/"
+
+	echo "$name" > /tmp/sysinfo/board_name
+	echo "$machine" > /tmp/sysinfo/model
+}
+
+boot_hook_add preinit_main do_sysinfo_orion5x

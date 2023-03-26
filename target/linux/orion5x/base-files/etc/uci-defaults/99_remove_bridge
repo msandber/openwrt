@@ -1,0 +1,14 @@
+
+. /lib/functions.sh
+
+board=$(board_name)
+
+case "$board" in
+dlink,dns323)
+	# delete bridge device and set devices to 'eth0' directly
+	uci delete network.@device[0]
+	uci set network.lan.device='eth0'
+	uci set network.lan6.device='eth0'
+	uci commit network
+	;;
+esac
