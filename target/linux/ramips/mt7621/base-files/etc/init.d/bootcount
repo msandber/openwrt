@@ -2,6 +2,18 @@
 
 START=99
 
+do_dna_ex400() {
+	local ub_vol=$(fw_printenv -n root_vol)
+	local cur_vol=$(for opt in $(cat /proc/cmdline) ;do case $opt in root=*) echo $opt ;;esac ;done | cut -f 2 -d:)
+
+	if [ "$ub_vol" == "$cur_vol" ]
+	then
+	fw_setenv boot_cnt_primary 0
+	else
+	fw_setenv boot_cnt_alt 0
+	fi
+}
+
 boot() {
 	case $(board_name) in
 	alfa-network,quad-e4g)
@@ -28,6 +40,9 @@ boot() {
 	linksys,e7350|\
 	samknows,whitebox-v8)
 		fw_setenv bootcount 0
+		;;
+	dna,valokuitu-plus-ex400)
+		do_dna_ex400
 		;;
 	zyxel,lte3301-plus)
 		[ $(printf %d $(fw_printenv -n DebugFlag)) -gt 0 ] || fw_setenv DebugFlag 1

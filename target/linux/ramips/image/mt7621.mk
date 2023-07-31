@@ -1074,6 +1074,90 @@ define Device/gehua_ghl-r-001
 endef
 TARGET_DEVICES += gehua_ghl-r-001
 
+define CompressLzma
+  $(STAGING_DIR_HOST)/bin/lzma e $(1) -lc1 -lp2 -pb2 $(2)
+endef
+
+define MkuImage
+	mkimage -A mips -O linux -T kernel -C $(1) -a 0x80001000 -e 0x80001000 \
+		-n '$(call toupper,$(ARCH)) $(VERSION_DIST) Linux-$(LINUX_VERSION)' \
+		-d $(2) $(3)
+endef
+
+define Image/Prepare
+	# copy kernel and dtb in /boot under rootfs
+	# TODO: this now affects all targets of the platform. Find a way around
+	# also, cannot have hard coded dtb name
+	$(call CompressLzma,$(KDIR)/vmlinux,$(KDIR)/vmlinux.bin.lzma)
+	$(call MkuImage,lzma,$(KDIR)/vmlinux.bin.lzma,$(KDIR)/uImage.lzma)
+	mkdir -p $(TARGET_DIR)/boot
+	cp $(KDIR)/uImage.lzma $(TARGET_DIR)/boot/uImage
+	cp $(KDIR)/image-mt7621_dna_valokuitu-plus-ex400.dtb $(TARGET_DIR)/boot/dtb
+endef
+
+define Build/dna-header
+	$(eval BC='$(STAGING_DIR_HOST)/bin/bc')
+	$(eval ubifsofs=1024)
+	$(eval ubifs=$(shell stat -c%s $(IMAGE_ROOTFS)))
+	$(eval pkginfoofs=$(shell echo $(ubifsofs) + $(ubifs) | $(BC)))
+	$(eval pkginfo=0)
+	$(eval scrofs=$(shell echo $(pkginfoofs) + $(pkginfo) | $(BC)))
+	$(eval scr=0)
+	$(eval sigofs=$(shell echo $(scrofs) + $(scr) | $(BC)))
+	$(eval sig=0)
+	$(eval md5ofs=$(shell echo $(sigofs) + $(sig) | $(BC)))
+	$(eval md5=32)
+	$(eval size=$(shell echo $(md5ofs) + $(md5) | $(BC)))
+	echo "IntenoIopY" > $@.tmp
+	echo "version 5" >> $@.tmp
+	echo "integrity MD5SUM" >> $@.tmp
+	echo "board EX400" >> $@.tmp
+	echo "chip 7621" >> $@.tmp
+	echo "arch all mipsel_1004kc" >> $@.tmp
+	echo "model EX400" >> $@.tmp
+	echo "release EX400-X-DNA-4.3.6.100-R-210518_0935" >> $@.tmp
+	echo "customer DNA" >> $@.tmp
+	echo "ubifsofs ${ubifsofs}" >> $@.tmp
+	echo "ubifs ${ubifs}" >> $@.tmp
+	echo "pkginfoofs ${pkginfoofs}" >> $@.tmp
+	echo "pkginfo $(pkginfo)" >> $@.tmp
+	echo "scrofs $(scrofs)" >> $@.tmp
+	echo "scr $(scr)" >> $@.tmp
+	echo "sigofs $(sigofs)" >> $@.tmp
+	echo "sig $(sig)" >> $@.tmp
+	echo "md5ofs $(md5ofs)" >> $@.tmp
+	echo "md5 $(md5)" >> $@.tmp
+	echo "size $(size)" >> $@.tmp
+	mv $@.tmp $@
+endef
+
+define Build/md5
+	$(MKHASH) -N md5 $@ > $@.md5
+	cat $@ $@.md5 > $@.tmp
+	rm $@.md5
+	mv $@.tmp $@
+endef
+
+define Device/dna_valokuitu-plus-ex400
+  $(Device/nand)
+  MKUBIFS_OPTS := -m $$(PAGESIZE) -e 124KiB -c 969
+  DEVICE_VENDOR := DNA
+  DEVICE_MODEL := Valokuitu Plus EX400
+  FILESYSTEMS := ubifs
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  SUBPAGESIZE := 2048
+  KERNEL := kernel-bin | lzma | uImage lzma
+  KERNEL_SIZE := 10240k
+  KERNEL_INITRAMFS := kernel-bin | append-dtb | lzma | loader-kernel | uImage none
+  IMAGE_SIZE := 128000k
+  IMAGES := sysupgrade.ubifs factory.ubifs
+  IMAGE/sysupgrade.ubifs := append-rootfs | append-metadata
+  IMAGE/factory.ubifs := dna-header | pad-to 1024 | append-rootfs | md5
+  DEVICE_PACKAGES := kmod-mt7603 kmod-mt7615-firmware kmod-usb3
+endef
+TARGET_DEVICES += dna_valokuitu-plus-ex400
+
 define Device/glinet_gl-mt1300
   $(Device/dsa-migration)
   IMAGE_SIZE := 32448k
