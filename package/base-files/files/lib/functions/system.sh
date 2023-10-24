@@ -79,6 +79,23 @@ mtd_get_mac_ascii() {
 	[ -n "$mac_dirty" ] && macaddr_canonicalize "$mac_dirty"
 }
 
+mtd_get_mac_ascii_ubi() {
+	local mtdname="$1"
+	local ubivolname="$2"
+	local key="$3"
+	local part
+	local mac_dirty
+
+	. /lib/upgrade/nand.sh
+
+	ubidev="$(nand_find_ubi "$mtdname")"
+	[ -n "$ubidev" ] && ubivol="$(nand_find_volume "$ubidev" "$ubivolname")"
+	[ -n "$ubivol" ] && mac_dirty=$(strings "/dev/$ubivol" | sed -n 's/^'"$key"'=//p')
+
+	# "canonicalize" mac
+	[ -n "$mac_dirty" ] && macaddr_canonicalize "$mac_dirty"
+}
+
 mtd_get_mac_encrypted_arcadyan() {
 	local iv="00000000000000000000000000000000"
 	local key="2A4B303D7644395C3B2B7053553C5200"
