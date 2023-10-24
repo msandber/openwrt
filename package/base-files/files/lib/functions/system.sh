@@ -86,6 +86,20 @@ mtd_get_mac_ascii() {
 	get_mac_ascii "$part" "$key"
 }
 
+mtd_get_mac_ascii_ubi() {
+	local mtdname="$1"
+	local ubivolname="$2"
+	local key="$3"
+	local ubidev
+	local ubivol
+
+	. /lib/upgrade/nand.sh
+
+	ubidev="$(nand_find_ubi "$mtdname")"
+	[ -n "$ubidev" ] && ubivol="$(nand_find_volume "$ubidev" "$ubivolname")"
+	[ -n "$ubivol" ] && get_mac_ascii "/dev/$ubivol" "$key"
+}
+
 mtd_get_mac_encrypted_arcadyan() {
 	local iv="00000000000000000000000000000000"
 	local key="2A4B303D7644395C3B2B7053553C5200"
