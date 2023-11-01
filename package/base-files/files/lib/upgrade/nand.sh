@@ -227,29 +227,24 @@ nand_upgrade_prepare_ubi() {
 
 	# create rootfs vol
 	if [ -n "$rootfs_length" ]; then
-		local rootfs_size_param
-		if [ "$rootfs_type" = "ubifs" ]; then
-			rootfs_size_param="-m"
-		else
-			rootfs_size_param="-s $rootfs_length"
-		fi
+		local rootfs_size_param="-s $rootfs_length"
+
 		if ! ubimkvol /dev/$root_ubidev -N "$CI_ROOTPART" $rootfs_size_param; then
 			echo "cannot create rootfs volume"
 			return 1;
 		fi
 	fi
 
-	# create rootfs_data vol for non-ubifs rootfs
-	if [ "$rootfs_type" != "ubifs" ]; then
-		local rootfs_data_size_param="-m"
-		if [ -n "$rootfs_data_max" ]; then
-			rootfs_data_size_param="-s $rootfs_data_max"
-		fi
-		if ! ubimkvol /dev/$root_ubidev -N rootfs_data $rootfs_data_size_param; then
-			if ! ubimkvol /dev/$root_ubidev -N rootfs_data -m; then
-				echo "cannot initialize rootfs_data volume"
-				return 1
-			fi
+	# create rootfs_data vol
+	local rootfs_data_size_param="-m"
+	if [ -n "$rootfs_data_max" ]; then
+		rootfs_data_size_param="-s $rootfs_data_max"
+	fi
+
+	if ! ubimkvol /dev/$root_ubidev -N rootfs_data $rootfs_data_size_param; then
+		if ! ubimkvol /dev/$root_ubidev -N rootfs_data -m; then
+			echo "cannot initialize rootfs_data volume"
+			return 1
 		fi
 	fi
 
