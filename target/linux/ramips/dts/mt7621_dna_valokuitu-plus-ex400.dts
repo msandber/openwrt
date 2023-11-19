@@ -18,7 +18,7 @@
 	};
 
 	chosen {
-		bootargs = "console=ttyS0,115200";
+		bootargs-override = "console=ttyS0,115200 root=ubi0:rootfs_1 ubi.mtd=ubi rootfstype=ubifs mtdparts=MT7621-NAND:1M(uboot),-(ubi)";
 	};
 
 	keys {
