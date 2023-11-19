@@ -1128,11 +1128,12 @@ define Build/md5
 endef
 
 define Build/systar-append-dtb
-	rm -rf sysupgrade-${DEVICE_NAME}
-	mkdir sysupgrade-${DEVICE_NAME}
-	cp $(KDIR)/image-$(firstword $(DEVICE_DTS)).dtb sysupgrade-${DEVICE_NAME}/dtb
-	$(STAGING_DIR_HOST)/bin/tar -rf $@ sysupgrade-${DEVICE_NAME}/dtb
-	rm -rf sysupgrade-${DEVICE_NAME}
+	$(eval temp_dir := $(shell mktemp -d))
+	$(eval sysup_dir := sysupgrade-${DEVICE_NAME})
+	mkdir -p $(temp_dir)/$(sysup_dir)
+	cp $(KDIR)/image-$(firstword $(DEVICE_DTS)).dtb $(temp_dir)/$(sysup_dir)/dtb
+	$(STAGING_DIR_HOST)/bin/tar -rf $@ -C $(temp_dir) $(sysup_dir)/dtb
+	rm -rf $(temp_dir)
 endef
 
 define Device/dna_valokuitu-plus-ex400
@@ -1141,9 +1142,6 @@ define Device/dna_valokuitu-plus-ex400
   DEVICE_VENDOR := DNA
   DEVICE_MODEL := Valokuitu Plus EX400
   FILESYSTEMS := ubifs
-#  BLOCKSIZE := 128k
-#  PAGESIZE := 2048
-#  SUBPAGESIZE := 2048
   KERNEL := kernel-bin | lzma | uImage lzma
   KERNEL_SIZE := 10240k
   KERNEL_INITRAMFS := kernel-bin | append-dtb | lzma | loader-kernel | uImage none
@@ -1151,7 +1149,7 @@ define Device/dna_valokuitu-plus-ex400
   IMAGES := factory.ubifs sysupgrade.tar
   IMAGE/factory.ubifs := dna-header | pad-to 1024 | append-rootfs | md5
   IMAGE/sysupgrade.tar := sysupgrade-tar | systar-append-dtb | append-metadata
-  DEVICE_PACKAGES := kmod-mt7603 kmod-mt7615-firmware kmod-usb3 kmod-loop
+  DEVICE_PACKAGES := kmod-mt7603 kmod-mt7615-firmware kmod-usb3
 endef
 TARGET_DEVICES += dna_valokuitu-plus-ex400
 
