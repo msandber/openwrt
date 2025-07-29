@@ -1,0 +1,44 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+
+/ {
+	chosen {
+		/delete-property/ bootargs-override;
+
+		rootdisk = <&ubi_rootfs>;
+		bootargs = "console=ttyS0,115200 ubi.block=0,fit root=/dev/fit0 rootwait";
+	};
+
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		ramoops@8d000000 {
+			compatible = "ramoops";
+			reg = <0x8d000000 0x00010000>;
+			record-size = <0x1000>;
+			no-map;
+		};
+	};
+};
+
+&nand {
+	partitions {
+		partition@100000 {
+			volumes {
+				ubi-volume-factory {
+					volname = "factory";
+				};
+
+				ubi-volume-recovery {
+					volname = "recovery";
+				};
+
+				ubi_rootfs: ubi-volume-fit {
+					volname = "fit";
+				};
+			};
+		};
+	};
+};

@@ -1,0 +1,9 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+#include "mt7621_genexis_pulse-ex400.dtsi"
+#include "mt7621_genexis_pulse-ex400-fit.dtsi"
+
+/ {
+	compatible = "genexis,pulse-ex400-fit", "mediatek,mt7621-soc";
+	model = "Genexis Pulse EX400 (FIT)";
+};

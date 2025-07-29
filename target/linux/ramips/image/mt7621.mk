@@ -238,6 +238,10 @@ define Build/zyxel-nwa-fit
 	@mv $@.new $@
 endef
 
+define Build/uboot-bin
+	cat $(STAGING_DIR_IMAGE)/mt7621_$1-u-boot-mt7621.bin >> $@
+endef
+
 define Device/dsa-migration
   DEVICE_COMPAT_VERSION := 1.1
   DEVICE_COMPAT_MESSAGE := Config cannot be migrated from swconfig to DSA
@@ -1429,6 +1433,21 @@ define Device/genexis_pulse-ex400
   DEVICE_ALT0_MODEL := Pulse EX400
 endef
 TARGET_DEVICES += genexis_pulse-ex400
+
+define Device/genexis_pulse-ex400-fit
+  $(Device/genexis_pulse-ex400)
+  DEVICE_MODEL := Pulse EX400 (FIT)
+  DEVICE_ALT0_MODEL := Pulse EX400 (FIT)
+  DEVICE_PACKAGES += fitblk
+  KERNEL := kernel-bin | gzip
+  KERNEL_INITRAMFS := kernel-bin | lzma | fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd
+  KERNEL_INITRAMFS_SUFFIX := -recovery.itb
+  IMAGES := sysupgrade.itb
+  IMAGE/sysupgrade.itb := append-kernel | fit gzip $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb external-static-with-rootfs | append-metadata
+  ARTIFACTS := u-boot-mt7621.bin
+  ARTIFACT/u-boot-mt7621.bin := uboot-bin genexis_pulse-ex400
+endef
+TARGET_DEVICES += genexis_pulse-ex400-fit
 
 define Device/glinet_gl-mt1300
   $(Device/dsa-migration)
