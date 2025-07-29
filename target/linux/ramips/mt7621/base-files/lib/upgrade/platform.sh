@@ -162,6 +162,10 @@ platform_do_upgrade() {
 	genexis,pulse-ex400)
 		inteno_do_upgrade "$1"
 		;;
+	genexis,pulse-ex400-fit|\
+	ubnt,edgerouter-x-fit)
+		fit_do_upgrade "$1"
+		;;
 	elecom,wrc-x1800gs)
 		[ "$(fw_printenv -n bootmenu_delay)" != "0" ] || \
 			fw_setenv bootmenu_delay 3
@@ -194,9 +198,6 @@ platform_do_upgrade() {
 	ubnt,edgerouter-x|\
 	ubnt,edgerouter-x-sfp)
 		platform_upgrade_ubnt_erx "$1"
-		;;
-	ubnt,edgerouter-x-fit)
-		fit_do_upgrade "$1"
 		;;
 	zyxel,lte3301-plus|\
 	zyxel,lte5398-m904|\
