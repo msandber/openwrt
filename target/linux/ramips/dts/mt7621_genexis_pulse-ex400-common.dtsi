@@ -70,7 +70,6 @@
 		partition@0 {
 			reg = <0x00 0x100000>;
 			label = "uboot";
-			read-only;
 		};
 
 		partition@100000 {
