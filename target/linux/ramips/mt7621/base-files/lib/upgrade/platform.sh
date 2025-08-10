@@ -160,6 +160,7 @@ platform_do_upgrade() {
 	genexis,pulse-ex400)
 		inteno_do_upgrade "$1"
 		;;
+	dna,valokuitu-plus-ex400-fit|\
 	genexis,pulse-ex400-fit|\
 	ubnt,edgerouter-x-fit)
 		fit_do_upgrade "$1"
