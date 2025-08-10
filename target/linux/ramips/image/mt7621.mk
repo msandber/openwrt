@@ -1128,6 +1128,14 @@ define Device/dna_valokuitu-plus-ex400
 endef
 TARGET_DEVICES += dna_valokuitu-plus-ex400
 
+define Device/dna_valokuitu-plus-ex400-fit
+  $(Device/dna_valokuitu-plus-ex400)
+  $(Device/genexis_pulse-ex400-fit/common)
+  DEVICE_MODEL :=  Valokuitu Plus EX400 (FIT)
+  ARTIFACT/u-boot-mt7621.bin := uboot-bin dna_valokuitu-plus-ex400
+endef
+TARGET_DEVICES += dna_valokuitu-plus-ex400-fit
+
 define Device/edimax_ra21s
   $(Device/dsa-migration)
   $(Device/uimage-lzma-loader)
@@ -1459,10 +1467,7 @@ define Device/genexis_pulse-ex400
 endef
 TARGET_DEVICES += genexis_pulse-ex400
 
-define Device/genexis_pulse-ex400-fit
-  $(Device/genexis_pulse-ex400)
-  DEVICE_MODEL := Pulse EX400 (FIT)
-  DEVICE_ALT0_MODEL := Pulse EX400 (FIT)
+define Device/genexis_pulse-ex400-fit/common
   DEVICE_PACKAGES += fitblk
   KERNEL := kernel-bin | gzip
   KERNEL_INITRAMFS := kernel-bin | lzma | fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd
@@ -1470,6 +1475,13 @@ define Device/genexis_pulse-ex400-fit
   IMAGES := sysupgrade.itb
   IMAGE/sysupgrade.itb := append-kernel | fit gzip $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb external-static-with-rootfs | append-metadata
   ARTIFACTS := u-boot-mt7621.bin
+endef
+
+define Device/genexis_pulse-ex400-fit
+  $(Device/genexis_pulse-ex400)
+  $(Device/genexis_pulse-ex400-fit/common)
+  DEVICE_MODEL := Pulse EX400 (FIT)
+  DEVICE_ALT0_MODEL := Pulse EX400 (FIT)
   ARTIFACT/u-boot-mt7621.bin := uboot-bin genexis_pulse-ex400
 endef
 TARGET_DEVICES += genexis_pulse-ex400-fit
