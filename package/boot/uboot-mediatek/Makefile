@@ -57,6 +57,15 @@ define U-Boot/mt7620_mt7530_rfb
   UBOOT_IMAGE:=u-boot-with-spl.bin
 endef
 
+define U-Boot/mt7621_dna_valokuitu-plus-ex400
+  NAME:=DNA Valokuitu Plus EX400
+  UBOOT_CONFIG:=mt7621_dna_valokuitu-plus-ex400
+  BUILD_DEVICES:=dna_valokuitu-plus-ex400-fit
+  BUILD_TARGET:=ramips
+  BUILD_SUBTARGET:=mt7621
+  UBOOT_IMAGE:=u-boot-mt7621.bin
+endef
+
 define U-Boot/mt7621_genexis_pulse-ex400
   NAME:=Genexis Pulse EX400
   UBOOT_CONFIG:=mt7621_genexis_pulse-ex400
@@ -867,6 +876,7 @@ endef
 UBOOT_TARGETS := \
 	mt7620_mt7530_rfb \
 	mt7620_rfb \
+	mt7621_dna_valokuitu-plus-ex400 \
 	mt7621_genexis_pulse-ex400 \
 	mt7621_nand_rfb \
 	mt7621_rfb \
